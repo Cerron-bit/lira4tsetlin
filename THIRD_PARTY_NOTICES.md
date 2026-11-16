@@ -1,12 +1,13 @@
 # Third-party notices
 
-This project contains modified code derived from the third-party projects listed below. These notices identify the relevant components and do not replace the license terms that apply to the rest of this repository. The repository's `LICENSE` file contains the Apache License 2.0 used for this project; the third-party components remain subject to their respective licenses and notices below.
+This project contains modified code derived from the third-party projects listed below. These notices identify the relevant code components and do not replace the license terms that apply to the rest of this repository. The repository's top-level `LICENSE` file contains the Apache License 2.0 used for this project, and it applies to the original code written for this repository. The MIT-licensed subproject listed below remains under the MIT license and is not re-licensed under Apache 2.0.
 
 ## pyTsetlinMachineParallel
 
 - **Upstream project:** [cair/pyTsetlinMachineParallel](https://github.com/cair/pyTsetlinMachineParallel)
 - **License:** MIT License
-- **Files in this repository:** `pyTsetlinMachineParallel/` (including `pyTsetlinMachineParallel/tm.py`, `pyTsetlinMachineParallel/tools.py`, `pyTsetlinMachineParallel/ConvolutionalTsetlinMachine.c`, `pyTsetlinMachineParallel/ConvolutionalTsetlinMachine.h`, `pyTsetlinMachineParallel/MultiClassConvolutionalTsetlinMachine.c`, `pyTsetlinMachineParallel/MultiClassConvolutionalTsetlinMachine.h`, `pyTsetlinMachineParallel/Tools.c`, `pyTsetlinMachineParallel/Tools.h`, and `pyTsetlinMachineParallel/fast_rand.h`)
+- **Files in this repository:** `pyTsetlinMachineParallel/pyTsetlinMachineParallel/` (including `tm.py`, `tools.py`, `ConvolutionalTsetlinMachine.c`, `ConvolutionalTsetlinMachine.h`, `MultiClassConvolutionalTsetlinMachine.c`, `MultiClassConvolutionalTsetlinMachine.h`, `Tools.c`, `Tools.h`, `fast_rand.h`, and `makefile`)
+- **Status:** This vendored subproject remains under the MIT license. It is not re-licensed under the repository's Apache 2.0 license.
 - **Changes:** The vendored package has been modified for this project. The upstream MIT notices are retained in the source files.
 
 Copyright notices found in the upstream package include:
@@ -40,22 +41,23 @@ SOFTWARE.
 ## TensorFlow Privacy: MI-LiRA 2021 research code
 
 - **Upstream project and source directory:** [tensorflow/privacy/research/mi_lira_2021](https://github.com/tensorflow/privacy/tree/master/research/mi_lira_2021)
-- **License:** Apache License 2.0; the license text is included in this repository's `LICENSE` file.
-- **Files in this repository identified as derived from that code:** `run.sh`, `core/train.py`, `core/inference.py`, `core/score.py` and `core/plot/evaluation_plot.py`.
+- **License:** Apache License 2.0
+- **Files in this repository identified as derived from that code:** `run.sh`, `core/train.py`, `core/inference.py`, `core/score.py`, and `core/plot/evaluation_plot.py`
+- **Status:** These files remain subject to the Apache License 2.0 and retain the upstream copyright notices in their headers.
 - **Changes:** These files have been modified for this project. Their source headers identify Google LLC's copyright and note modifications by Yannick Fuchs.
 - **Upstream NOTICE file:** No `NOTICE` file was present in the referenced `research/mi_lira_2021` directory or the upstream repository root when checked.
 
-The applicable upstream attribution is:
+The applicable upstream attribution notice is:
 
 ```text
 Copyright 2021 Google LLC
 Licensed under the Apache License, Version 2.0.
 ```
 
-The upstream project-wide Apache license also contains this copyright notice:
+The upstream project-wide Apache license also contains this notice:
 
 ```text
 Copyright 2018, The TensorFlow Privacy Authors.
 ```
 
-Keep the Apache license text in `LICENSE` and retain the original copyright/license headers in any distributed files derived from this component. Apache License 2.0 section 4(b) also requires modified files to carry prominent notices stating that they were changed.
+The full Apache License 2.0 text is included in the repository's top-level `LICENSE` file. Any modified Apache-licensed files should continue to carry their original copyright and license headers, and should also note material changes as required by Apache License 2.0 section 4(b).

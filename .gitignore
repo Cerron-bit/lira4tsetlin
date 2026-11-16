@@ -1,0 +1,12 @@
+# ignore lock-files from nix-flake and poetry.
+*.lock
+
+# ignore runtime-files.
+exp/
+logs/
+__pycache__/
+core/__pycache__/
+core/plot/__pycache__/
+
+# ignore project-settings.
+tsetlin_env/

@@ -6,7 +6,7 @@ This project contains modified code derived from the third-party projects listed
 
 - **Upstream project:** [cair/pyTsetlinMachineParallel](https://github.com/cair/pyTsetlinMachineParallel)
 - **License:** MIT License
-- **Files in this repository:** `pyTsetlinMachineParallel/pyTsetlinMachineParallel/` (including `tm.py`, `tools.py`, `ConvolutionalTsetlinMachine.c`, `ConvolutionalTsetlinMachine.h`, `MultiClassConvolutionalTsetlinMachine.c`, `MultiClassConvolutionalTsetlinMachine.h`, `Tools.c`, `Tools.h`, `fast_rand.h`, and `makefile`)
+- **Files in this repository:** `pyTsetlinMachineParallel/setup.py`, `pyTsetlinMachineParallel/MANIFEST.in` and `pyTsetlinMachineParallel/pyTsetlinMachineParallel/` (including `tm.py`, `tools.py`, `ConvolutionalTsetlinMachine.c`, `ConvolutionalTsetlinMachine.h`, `MultiClassConvolutionalTsetlinMachine.c`, `MultiClassConvolutionalTsetlinMachine.h`, `Tools.c`, `Tools.h`, `fast_rand.h`, and `makefile`)
 - **Status:** This vendored subproject remains under the MIT license. It is not re-licensed under the repository's Apache 2.0 license.
 - **Changes:** The vendored package has been modified for this project. The upstream MIT notices are retained in the source files.
 

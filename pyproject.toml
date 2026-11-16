@@ -1,0 +1,31 @@
+[project]
+name = "lira4tsetlin"
+version = "1.0.0"
+description = ""
+authors = [
+    {name = "Yannick Fuchs"}
+]
+readme = "../README.md"
+requires-python = ">=3.12,<4"
+dependencies = [
+    # needed for Tsetlin Machine
+    "numpy (>=2.4.4,<3.0.0)",
+    "keras (>=3.14.0,<4.0.0)",
+    "tensorflow[and-cuda] (>=2.21.0,<3.0.0)",
+    "matplotlib (>=3.10.9,<4.0.0)",
+    # Needed for LiRA.
+    "scipy (>=1.17.1,<2.0.0)",
+    "scikit-learn (>=1.8.0,<2.0.0)",
+    "importlib-resources (>=7.1.0,<8.0.0)",
+    "setuptools (>=82.0.1,<83.0.0)",
+    "wheel (>=0.47.0,<0.48.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "pandas (>=3.0.5,<4.0.0)",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0", "setuptools>=82.0.1,<83.0.0", "wheel"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false

@@ -41,7 +41,7 @@ SOFTWARE.
 
 - **Upstream project and source directory:** [tensorflow/privacy/research/mi_lira_2021](https://github.com/tensorflow/privacy/tree/master/research/mi_lira_2021)
 - **License:** Apache License 2.0; the license text is included in this repository's `LICENSE` file.
-- **Files in this repository identified as derived from that code:** `core/train.py`, `core/inference.py`, and `core/score.py`.
+- **Files in this repository identified as derived from that code:** `run.sh`, `core/train.py`, `core/inference.py`, `core/score.py` and `core/plot/evaluation_plot.py`.
 - **Changes:** These files have been modified for this project. Their source headers identify Google LLC's copyright and note modifications by Yannick Fuchs.
 - **Upstream NOTICE file:** No `NOTICE` file was present in the referenced `research/mi_lira_2021` directory or the upstream repository root when checked.
 

@@ -6,7 +6,7 @@ This project contains modified code derived from the third-party projects listed
 
 - **Upstream project:** [cair/pyTsetlinMachineParallel](https://github.com/cair/pyTsetlinMachineParallel)
 - **License:** MIT License
-- **Files in this repository:** `pyTsetlinMachineParallel/pyTsetlinMachineParallel/` (including `tm.py`, `tools.py`, `ConvolutionalTsetlinMachine.c`, `ConvolutionalTsetlinMachine.h`, `MultiClassConvolutionalTsetlinMachine.c`, `MultiClassConvolutionalTsetlinMachine.h`, `Tools.c`, `Tools.h`, and `fast_rand.h`)
+- **Files in this repository:** `pyTsetlinMachineParallel/` (including `pyTsetlinMachineParallel/tm.py`, `pyTsetlinMachineParallel/tools.py`, `pyTsetlinMachineParallel/ConvolutionalTsetlinMachine.c`, `pyTsetlinMachineParallel/ConvolutionalTsetlinMachine.h`, `pyTsetlinMachineParallel/MultiClassConvolutionalTsetlinMachine.c`, `pyTsetlinMachineParallel/MultiClassConvolutionalTsetlinMachine.h`, `pyTsetlinMachineParallel/Tools.c`, `pyTsetlinMachineParallel/Tools.h`, and `pyTsetlinMachineParallel/fast_rand.h`)
 - **Changes:** The vendored package has been modified for this project. The upstream MIT notices are retained in the source files.
 
 Copyright notices found in the upstream package include:

@@ -219,7 +219,7 @@ def main(argv):
     if not os.path.exists(plot_path):
         os.mkdir(plot_path)
 
-    sample_ids: dict[int, set[int]] = get_random_sample_ids(50, Y_train)
+    sample_ids: dict[int, set[int]] = get_random_sample_ids(FLAGS.num_samples, Y_train)
 
     # Get sample scores and memberships, while preserving the classes and ids.
     class_sample_scores: dict[int, dict[int, NDArray[float64]]] = {}
@@ -252,4 +252,5 @@ if __name__ == "__main__":
         "Subdirectory where the plotted histograms will be saved to.",
     )
     flags.DEFINE_integer("classes", 10, "number of classes within the dataset.")
+    flags.DEFINE_integer("num_samples", 50, "number of selected samples per class.")
     app.run(main)

@@ -28,6 +28,7 @@ class TsetlinMachine:
         Constructor currently supports two types of Tsetlin Machines, one for image classification and one for text.
         :param image_dataset: True if the dataset contains images, False if it contains text.
         """
+        # Specify hyperparameters here.
         number_of_clauses: int = 2000
         target_voting: int = 50 * 100
         specificity: float = 5.0
@@ -55,7 +56,7 @@ class TsetlinMachine:
         epochs: int,
         train: dict[str, NDArray[int8]],
         test: dict[str, NDArray[int8]],
-        print_comparison: bool = True,
+        print_comparison: bool = False,
     ) -> None:
         """
         Standard Tsetlin Machine training with logging.

@@ -25,9 +25,11 @@ DATASET_SIZE=60000
 # 10 for "mnist" and "fashion_mnist".
 # 2 for "imdb".
 DATASET_CLASSES=10
-# Represents the fraction of the dataset that is used.
+# Denominator in the fraction of the dataset that is used.
 # Select 1 for the complete dataset.
 DATA_FRACTION=1
+# Minimum: 16 models.
+# Increase this value only in powers of 2.
 NUM_EXPERIMENTS=32
 EPOCHS=30
 # Fixed FPR as decimal.
@@ -38,7 +40,14 @@ if [[ $DATA_FRACTION -gt 1 ]]; then
 fi
 
 if [[ $# -ne 1 ]]; then
-    echo "ERROR: This script needs exactly one argument. Please provide the step from which you want to start the pipeline (1-5).";
+    echo -e "ERROR: This script needs exactly one argument. \nPlease provide the step from which you want to start the pipeline (1-5).";
+    exit 1;
+elif [[ $NUM_EXPERIMENTS -lt 16 ]]; then
+    echo -e "ERROR: The current number of experiments is insufficient.\nPlease use at least 16 shadow models.";
+    exit 1;
+elif [[ $(($NUM_EXPERIMENTS % 2)) -ne 0 ]]; then
+    echo -e "ERROR: The current number of experiments is not a power of 2.\nThis run might break during the inference step.";
+    exit 1;
 elif [[ $1 =~ ^[1-5]$ ]]; then
     case $1 in
         1)
@@ -64,9 +73,10 @@ elif [[ $1 =~ ^[1-5]$ ]]; then
             ;;
         5)
             # Plot histograms.
-            python3 core/plot/histogram.py --logdir=exp/$DATASET/ --classes=$DATASET_CLASSES
+            python3 core/plot/histogram.py --num_samples=10 --logdir=exp/$DATASET/ --classes=$DATASET_CLASSES 
             ;;
     esac
 else
     echo "ERROR: The specified step needs to be any number from 1 to 5.";
+    exit 1;
 fi

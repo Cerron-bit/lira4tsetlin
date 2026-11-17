@@ -3,8 +3,18 @@ This framework measures the exposure of training data whithin a Tsetlin Machine 
 It helps developers minimize the potential privacy leakage within their models by providing a suitable benchmark.
 
 ## Contents
-TODO
-
+- [Related Works](#related-works)
+- [Installation](#installation)
+ - [Nix Package Manager](#nix-package-manager)
+ - [Other Distros & Package Managers](#other-distros--package-managers)
+- [Documentation](#documentation)
+ - [General Usage](#general-usage)
+  - [Shadow Model Hyperparameters](#shadow-model-hyperparameters)
+  - [Configuring LiRA](#configuring-lira)
+  - [Running LiRA](#running-lira)
+ - [Additional Features](#additional-features)
+  - [Training & Test Accuracy Logs](#training--test-accuracy-logs)
+  - [Generate Histograms](#generate-histograms)
 
 ## Related Works
 The framework will conduct a **Likelihood Ratio Attack (LiRA)**, which is a specific kind of Membership Inference Attack based on the [work of Carlini et al](https://github.com/tensorflow/privacy/tree/master/research/mi_lira_2021).
@@ -165,24 +175,24 @@ In `logs` you can find one log file for every shadow model containing their trai
 In `exp/DATASET` you can find one directory for each shadow model, which contain the model itself in a `tsetlin_machine.pkl`, the `keep.npy`, the extracted vote sums in `logits` and the calculated Membership Inference signal scores in `scores`.
 There is also the `exp/DATASET/data_cache`, which saves the preprocessed dataset.
 
-Once a run is complete, an `eval@fixedFPR.txt` will be created, which saves the results:
+Once a run is complete, the results will be saved in `eval@fixedFPR.txt`:
 
 ```
 Attack Ours (online)
- AUC 0.4922, Accuracy 0.5169, TPR@1%FPR of 0.0216
+ AUC 0.5363, Accuracy 0.5258, TPR@1%FPR of 0.0098
 Attack Ours (online, fixed variance)
- AUC 0.4632, Accuracy 0.5058, TPR@1%FPR of 0.0150
+ AUC 0.5492, Accuracy 0.5283, TPR@1%FPR of 0.0380
 Attack Ours (offline)
- AUC 0.4980, Accuracy 0.5154, TPR@1%FPR of 0.0116
+ AUC 0.4992, Accuracy 0.5047, TPR@1%FPR of 0.0102
 Attack Ours (offline, fixed variance)
- AUC 0.4864, Accuracy 0.5127, TPR@1%FPR of 0.0166
+ AUC 0.4999, Accuracy 0.5071, TPR@1%FPR of 0.0204
 Attack Global threshold
- AUC 0.5295, Accuracy 0.5296, TPR@1%FPR of 0.0166
+ AUC 0.5205, Accuracy 0.5239, TPR@1%FPR of 0.0119
 ```
 
-Additionally a `fprtpr.pdf` is created to visualize the resuluts.
+Additionally a `fprtpr.pdf` is created to save the ROC as well.
 
-TODO add a picture of it here.
+<img width="600" height="300" alt="fprtpr" src="https://github.com/user-attachments/assets/60f53f96-563a-4d13-815e-ddb0816badd4" />
 
 ### Additional Features
 #### Training & Test Accuracy Logs
@@ -206,7 +216,7 @@ This step needs to be activated after the score is calculated in step 3 within `
 It does not overwrite results of step 4, but instead saving them in `exp/DATASET/histograms`.
 The following example shows a histogram generated with 32 shadow models trained on MNIST.
 
-TODO add the histogram here.
+<img width="2741" height="1169" alt="sample_979_scorings" src="https://github.com/user-attachments/assets/10524f6f-f2e4-4864-b690-d84c98bdf1b5" />
 
 **Why is this an experimental feature?**
 Generating a histogram has only been tested with MNIST and Fashion-MNIST.

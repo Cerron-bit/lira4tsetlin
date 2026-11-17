@@ -60,11 +60,11 @@ elif [[ $1 =~ ^[1-5]$ ]]; then
             ;&
         4)
             # Plot results.
-            python3 core/plot/evaluation_plot.py --logdir=exp/$DATASET/ --fpr=$FPR > eval@fixedFPR.txt
+            python3 core/plot/evaluation.py --logdir=exp/$DATASET/ --fpr=$FPR > eval@fixedFPR.txt
             ;;
         5)
             # Plot histograms.
-            python3 core/plot/histogram_plot.py --logdir=exp/$DATASET/ --classes=$DATASET_CLASSES
+            python3 core/plot/histogram.py --logdir=exp/$DATASET/ --classes=$DATASET_CLASSES
             ;;
     esac
 else

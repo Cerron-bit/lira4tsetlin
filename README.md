@@ -1,183 +1,161 @@
-# lira4tsetlin
-This framework measures the exposure of training data whithin a Tsetlin Machine using Membership Inference Attacks.
-It helps developers minimize the potential privacy leakage within their models by providing a suitable benchmark.
+# LiRA for Tsetlin Machines
+
+A framework for measuring training-data exposure in Tsetlin Machines with **membership inference attacks (MIAs)**. It adapts the Likelihood Ratio Attack (LiRA) to Tsetlin Machines and provides a repeatable benchmark for evaluating privacy leakage in trained models.
+
+> **Research software:** This project is intended for experimentation and privacy evaluation. Attack results depend on the dataset, model configuration, and experimental setup; they should not be interpreted as a guarantee of privacy or as a complete privacy audit.
 
 ## Contents
-- [Related Works](#related-works)
-- [Installation](#installation)
-  - [Nix Package Manager](#nix-package-manager)
-  - [Other Distros & Package Managers](#other-distros--package-managers)
-- [Documentation](#documentation)
-  - [General Usage](#general-usage)
-    - [Shadow Model Hyperparameters](#shadow-model-hyperparameters)
-    - [Configuring LiRA](#configuring-lira)
-    - [Running LiRA](#running-lira)
-  - [Additional Features](#additional-features)
-    - [Training & Test Accuracy Logs](#training--test-accuracy-logs)
-    - [Generate Histograms](#generate-histograms)
 
-## Related Works
-The framework will conduct a **Likelihood Ratio Attack (LiRA)**, which is a specific kind of Membership Inference Attack based on the [work of Carlini et al](https://github.com/tensorflow/privacy/tree/master/research/mi_lira_2021).
-Since the original attack targets neural networks, this implementation is modified to target Tsetlin Machines based on the [implementation of Ole-Christoffer Granmo](https://github.com/cair/pyTsetlinMachineParallel).
+- [Background](#background)
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [Nix](#nix)
+  - [Other Linux distributions](#other-linux-distributions)
+- [Verify the installation](#verify-the-installation)
+- [Configuration](#configuration)
+- [Run the attack](#run-the-attack)
+- [Outputs](#outputs)
+- [Optional features](#optional-features)
+- [License](#license)
+
+## Background
+
+LiRA is a membership inference attack introduced by Carlini et al. This project adapts the attack to Tsetlin Machines, using the [pyTsetlinMachineParallel implementation](https://github.com/cair/pyTsetlinMachine) as its model foundation.
+
+- LiRA reference implementation: [tensorflow/privacy](https://github.com/tensorflow/privacy)
+- Tsetlin Machine implementation: [cair/pyTsetlinMachine](https://github.com/cair/pyTsetlinMachine)
+
+## Requirements
+
+- Linux with a CUDA-capable NVIDIA GPU and working CUDA support
+- CUDA 12
+- Python 3.12
+- Poetry and `virtualenv` (for the manual setup)
+
+The project builds `pyTsetlinMachineParallel` from source. Installation and model training can take a while, and the complete attack may require substantial GPU time and disk space.
 
 ## Installation
-There are two possible installation methods provided.
-Both assume that your machine supports CUDA and they also might take some time to install, because the pyTsetlinMachineParallel package will be build from source, just like the CUDA libraries, if you use the Nix package manager.
 
-### Nix Package Manager
-If you use the Nix package manager or NixOS, you can use the provided flake to automatically setup the entire project.
-**This flake was written and tested for NixOS version 26.05.**
-Before you install the flake, make sure to have [CUDA support](https://wiki.nixos.org/wiki/CUDA) and [Nix flakes](https://wiki.nixos.org/wiki/Flakes) enabled on your machine.
+### Nix
 
-Once you have confirmed that those features are enabled, navigate into the projects directory and use the following command to begin the installation:
+The included flake provides a development environment for **x86_64-linux** and is configured for NixOS 26.05 / nixpkgs `nixos-26.05`. Enable Nix flakes and configure CUDA support for your system before proceeding; see the [NixOS CUDA documentation](https://wiki.nixos.org/wiki/CUDA) and [Nix flakes documentation](https://wiki.nixos.org/wiki/Flakes).
+
+From the repository root, run:
 
 ```bash
 nix develop
 ```
 
-The flake will then...
-1. configure the `python 3.12` environment using `poetry` and `virtualenv`, 
-2. download necessary `CUDA version 12` packages, which are needed by `Tensorflow`, 
-3. download relevant python dependencies, 
-4. build the `pyTsetlinMachineParallel` package from source 
-5. and run some tests to confirm whether the installation was successful.
+On first launch, the shell hook creates and activates a Python 3.12 virtual environment, installs the Poetry dependencies, builds and installs `pyTsetlinMachineParallel`, and runs GPU/module checks. The CUDA libraries and native extension are built or configured for your machine, so the first launch may take some time.
 
-**Keep in mind that the CUDA libraries and the pyTsetlinMachineParallel module are build from source for your machine.**
-Therefore those two steps can take a while to complete.
+A successful check should report a GPU and `Reachable: True`, for example:
 
-After the installation, the test outputs should look like this:
-```
->>>>>>>>>>>>>>>>>>>>> DETECTING GPU <<<<<<<<<<<<<<<<<<<<<<
+```text
 [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
->>>>>>>>>>>>>> CHECKING MODIFIED TM-MODULE <<<<<<<<<<<<<<<
 Reachable: True
 ```
 
-### Other Distros & Package Managers
-Before proceeding, make sure you have `CUDA version 12` support enabled and `python 3.12`, `poetry` and `virtualenv` installed on your machine.
+### Other Linux distributions
 
-Once those requirements are fulfilled, create and activate a virtual environment using the following command.
+Ensure the requirements above are installed and CUDA 12 is available. From the repository root, create and activate a virtual environment and install the Python dependencies:
 
 ```bash
 virtualenv -p python3.12 tsetlin_env
 source tsetlin_env/bin/activate
-```
-
-Inside this virtual environment, make sure you are in the same directory as the `pyproject.toml` and use `poetry` to install the relevant dependencies.
-
-```bash
 poetry install
 ```
 
-Next you need to build the `pyTsetlinMachineParallel` package from source. 
+Build and install the bundled Tsetlin Machine extension:
 
 ```bash
 cd pyTsetlinMachineParallel
 python3 setup.py build
 python3 setup.py install
 rm -r build pyTsetlinMachineParallel.egg-info
-cd ../
+cd ..
 ```
-**OPTIONAL:** This step may not be needed on every system, but if the python module still breaks, you might need to add the compiled library to your LD_LIBRARY_PATH.
+
+If the compiled module cannot find its shared library at runtime, set `LD_LIBRARY_PATH` to the installed `libTM` shared object. The exact filename and environment path can vary by platform and Python build. For example, on a typical CPython 3.12 x86-64 environment:
 
 ```bash
-export LD_LIBRARY_PATH="tsetlin_env/lib/python3.12/site-packages/libTM.cpython-312-x86_64-linux-gnu.so:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$PWD/tsetlin_env/lib/python3.12/site-packages:$LD_LIBRARY_PATH"
 ```
 
-#### Ensuring a correct installation.
-You can run these two tests in order to verify your installation.
-The first one ensures that `Tensorflow` can detect and use your GPU.
+## Verify the installation
+
+Check whether TensorFlow can see the GPU:
 
 ```bash
-python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))" 2>/dev/null | grep "PhysicalDevice"
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 ```
 
-A correct output should look like this:
-
-```
-[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
-```
-
-The second test ensures that the compiled library can be used through the `pyTsetlinMachineParallel` module.
+The output should include a GPU `PhysicalDevice`. Then verify that the compiled Tsetlin Machine module can be imported and initialized:
 
 ```bash
-python3 -c "from pyTsetlinMachineParallel.tm import MultiClassConvolutionalTsetlinMachine2D; TM = MultiClassConvolutionalTsetlinMachine2D(number_of_clauses=2000,T=50 * 100,s=5.0,patch_dim=(10, 10),weighted_clauses=True); print('Reachable:', TM.T == 5000)"
+python3 -c "from pyTsetlinMachineParallel.tm import MultiClassConvolutionalTsetlinMachine2D; TM = MultiClassConvolutionalTsetlinMachine2D(number_of_clauses=2000, T=50 * 100, s=5.0, patch_dim=(10, 10)); print('Reachable:', TM is not None)"
 ```
 
-A correct output should look like this:
+Expected final output:
 
-```
+```text
 Reachable: True
 ```
 
-## Documentation
-**Disclaimer:** This documentation assumes you are familiar with the general concept of the [Likelihood Ratio Attack](https://ieeexplore.ieee.org/abstract/document/9833649).
+## Configuration
 
-### General Usage
-In most cases you just need to interact with two files.
-- `run.sh`
-- `core/tsetlinMachine.py`
+Before running an experiment, review the settings near the top of [`run.sh`](run.sh). Dataset names follow Keras naming. The script currently documents these datasets:
 
-#### Shadow Model Hyperparameters
-The hyperparameters of your shadow models can be specified in `core/tsetlinMachine.py` line 32 to 35 and if you use a convolutional Tsetlin Machine, you can set the dimensions of the convolution patch on line 43.
-By default the shadow models are trained with the following configuration.
+| Setting | Purpose | Defaults / supported values |
+| --- | --- | --- |
+| `DATASET` | Dataset to load | `mnist`, `fashion_mnist`, or `imdb` |
+| `DATASET_SIZE` | Number of samples in the selected dataset | 60,000 for MNIST and Fashion-MNIST; 25,000 for IMDB |
+| `DATASET_CLASSES` | Number of classes | 10 for MNIST and Fashion-MNIST; 2 for IMDB |
+| `DATA_FRACTION` | Dataset divisor; `1` uses the full dataset | Default: `1` |
+| `NUM_EXPERIMENTS` | Number of shadow models | Default: `32`; minimum: `16`; use a power of two |
+| `EPOCHS` | Training epochs per shadow model | Default: `30` |
+| `FPR` | False-positive rate used for final evaluation | Default: `0.01` |
 
+Preprocessing is included for MNIST, Fashion-MNIST, and IMDB. Review the dataset configuration in [`run.sh`](run.sh) before selecting a dataset; keep the size and class count consistent with it.
+
+The shadow-model parameters are defined in [`core/tsetlinMachine.py`](core/tsetlinMachine.py). The default configuration is:
+
+```text
+number_of_clauses: 2000
+target_voting: 50 * 100
+specificity: 5.0
+weighted: True
+patch_dim: (10, 10)
 ```
-number_of_clauses: int = 2000
-target_voting: int = 50 * 100
-specificity: float = 5.0
-weighted: bool = True
-patch_dim=(10, 10)
-```
 
-#### Configuring LiRA
-In `run.sh` you can find all configurable options from line 16 to 35 along with available options.
+The convolution patch dimensions are relevant to image data. Change the model settings to match your experiment and data before training.
 
-**1. DATASET:** 
-This project uses Keras to load datasets and thus utilizes the same names for datasets as Keras. 
-It also already integrates preprocessing for MNIST, Fashion-MNIST and IMDB.
+## Run the attack
 
-**2. DATASET_SIZE:**
-The total number of samples whithin the chosen dataset.
-You can find the sizes for the supported datasets commented above this option.
-
-**3. DATASET_CLASSES:**
-The number of classes within the chosen dataset.
-It is needed during the inference step and in the generation of histograms, which is currently an experimental feature.
-
-**4. DATA_FRACTION:**
-This represents the denominator in the fraction of the dataset that is actually used in the attack (e.g. 1/2, 1/4, 1/8).
-By default this value is 1, which means the complete dataset is used.
-
-**5. NUM_EXPERIMENTS:**
-The number of shadow models that are trained during one run.
-A minimum of 16 shadow models is required.
-
-**6. EPOCHS:**
-The number of training epochs each shadow model performs.
-
-**7. FPR:**
-The fixed False-Positive Rate as a decimal value that should be used during the evaluation at the end.
-
-#### Running LiRA
-To run LiRA use the following command:
+Make the script executable if needed, then start the pipeline from step 1:
 
 ```bash
+chmod +x run.sh
 ./run.sh 1
 ```
 
-As you can see, you need to specify the step from which the execution should begin.
-Step 1 through 4 will be executed automatically after the prior step is completed.
-These steps form the complete attack and need to be performed in order.
+Steps 1–4 run sequentially when started at step 1:
 
-During the execution, new directories will be created.
-In `logs` you can find one log file for every shadow model containing their training and test accuracies.
-In `exp/DATASET` you can find one directory for each shadow model, which contain the model itself in a `tsetlin_machine.pkl`, the `keep.npy`, the extracted vote sums in `logits` and the calculated Membership Inference signal scores in `scores`.
-There is also the `exp/DATASET/data_cache`, which saves the preprocessed dataset.
+1. Train the shadow Tsetlin Machines.
+2. Perform inference.
+3. Calculate attack scores.
+4. Evaluate and plot the results.
 
-Once a run is complete, the results will be saved in `eval@fixedFPR.txt`:
+The script accepts a starting step from `1` to `5`. Starting at steps 2, 3, or 4 runs that step and the subsequent pipeline steps, which is useful when continuing from existing intermediate results. Step 5 generates histograms and is run separately after the scores have been calculated. Keep the experiment configuration unchanged when resuming a run so that intermediate files are consistent.
 
-```
+## Outputs
+
+The pipeline creates experiment data under `exp/<DATASET>/` and per-model logs under `logs/`. Experiment directories include the saved Tsetlin Machine (`tsetlin_machine.pkl`), membership indicators (`keep.npy`), vote outputs (`logits`), and cached preprocessed data (`data_cache`). The exact files depend on the stages completed.
+
+After evaluation, the repository root contains `eval@fixedFPR.txt` with metrics such as AUC, accuracy, and true-positive rate at the configured false-positive rate. A ROC plot is also written as `exp/<DATASET>/fprtpr.pdf`.
+
+Example evaluation output:
+
+```text
 Attack Ours (online)
  AUC 0.5363, Accuracy 0.5258, TPR@1%FPR of 0.0098
 Attack Ours (online, fixed variance)
@@ -190,36 +168,32 @@ Attack Global threshold
  AUC 0.5205, Accuracy 0.5239, TPR@1%FPR of 0.0119
 ```
 
-Additionally a `fprtpr.pdf` is created to save the ROC as well.
+These values are illustrative output, not expected results for every dataset or configuration.
 
-<img width="600" height="300" alt="fprtpr" src="https://github.com/user-attachments/assets/60f53f96-563a-4d13-815e-ddb0816badd4" />
+## Optional features
 
-### Additional Features
-#### Training & Test Accuracy Logs
-If you need further insight into the training performance of your shadow models, you can change line 59 within `core/tsetlinMachine.py` to the following:
+### Training and test accuracy logs
 
-```python 
+For additional accuracy information during shadow-model training, enable `print_comparison` in `core/tsetlinMachine.py`:
+
+```python
 print_comparison: bool = True
 ```
 
-This will result in a longer training time, but logs both training and test accuracies into the same file.
+This adds training and test accuracy information to the model logs and may increase training time.
 
-#### Generate Histograms
-**Disclaimer: This is an experimental feature.**
-The following command will randomly select the provided number of samples from each class and generate a histogram showing the distribution of your shadow models for each of those samples.
+### Histograms (experimental)
+
+After step 3 has generated the scores, run:
 
 ```bash
-./run 5
+./run.sh 5
 ```
 
-This step needs to be activated after the score is calculated in step 3 within `run.sh`.
-It does not overwrite results of step 4, but instead saving them in `exp/DATASET/histograms`.
-The following example shows a histogram generated with 32 shadow models trained on MNIST.
+The current script requests 10 samples per class. Histogram files are saved under `exp/<DATASET>/histograms`; adjust the `--num_samples` argument in `run.sh` to change the number of samples.
 
-<img width="2741" height="1169" alt="sample_979_scorings" src="https://github.com/user-attachments/assets/10524f6f-f2e4-4864-b690-d84c98bdf1b5" />
+This feature has been tested with MNIST and Fashion-MNIST only. Other image dimensions may not work, and text datasets are not supported.
 
-**Why is this an experimental feature?**
-Generating a histogram has only been tested with MNIST and Fashion-MNIST.
-Both datasets contain sample images with the same dimensions (28x28 pixels).
-There has never been any test with other images and thus it might be possible that the implementation will break on other datasets.
-Text datasets are not supported in this feature.
+## License
+
+This project is released under the [Apache License 2.0](LICENSE). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for notices and licensing information for third-party components.

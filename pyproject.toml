@@ -15,19 +15,17 @@
 [project]
 name = "lira4tsetlin"
 version = "1.0.0"
-description = ""
+description = "Framework to measure the exposure of training data within a Tsetlin Machine using Membership Inference Attacks."
 authors = [
     {name = "Yannick Fuchs"}
 ]
 readme = "../README.md"
 requires-python = ">=3.12,<4"
 dependencies = [
-    # needed for Tsetlin Machine
     "numpy (>=2.4.4,<3.0.0)",
     "keras (>=3.14.0,<4.0.0)",
     "tensorflow[and-cuda] (>=2.21.0,<3.0.0)",
     "matplotlib (>=3.10.9,<4.0.0)",
-    # Needed for LiRA.
     "scipy (>=1.17.1,<2.0.0)",
     "scikit-learn (>=1.8.0,<2.0.0)",
     "importlib-resources (>=7.1.0,<8.0.0)",

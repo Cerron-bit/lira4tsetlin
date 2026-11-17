@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-lira4tsetlin is an open-source framework for evaluating **training-data exposure** through membership inference attacks. It adapts the Likelihood Ratio Attack (LiRA) to Tsetlin Machine classifiers and provides a repeatable workflow for training shadow models, calculating membership scores, and visualizing attack performance.
+**lira4tsetlin** is an open-source framework for evaluating **training-data exposure** through membership inference attacks. It adapts the Likelihood Ratio Attack (LiRA) to Tsetlin Machine classifiers and provides a repeatable workflow for training shadow models, calculating membership scores, and visualizing attack performance.
 
 > **Research software:** Results depend on the dataset, model configuration, and experimental setup. Use this project for privacy research and benchmarking, not as a guarantee that a model is private or as a complete privacy audit.
 

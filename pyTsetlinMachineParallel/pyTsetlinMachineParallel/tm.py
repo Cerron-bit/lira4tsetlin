@@ -20,6 +20,7 @@
 
 # This code implements the Convolutional Tsetlin Machine from paper arXiv:1905.09688
 # https://arxiv.org/abs/1905.09688
+# Modified by Yannick Fuchs
 
 import ctypes as C
 import os

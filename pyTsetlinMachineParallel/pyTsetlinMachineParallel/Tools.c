@@ -23,7 +23,6 @@ SOFTWARE.
 This code implements the Convolutional Tsetlin Machine from paper arXiv:1905.09688
 https://arxiv.org/abs/1905.09688
 
-Modified by Yannick Fuchs
 */
 
 #include <stdio.h>
@@ -61,7 +60,7 @@ void tm_encode(unsigned int *X, unsigned int *encoded_X, int number_of_examples,
 				Xi = &X[input_pos];
 				encoded_Xi = &encoded_X[encoded_pos];
 
-				// Encode y coordinate of patch into feature vector 
+				// Encode y coordinate of patch into feature vector
 				for (int y_threshold = 0; y_threshold < dim_y - patch_dim_y; ++y_threshold) {
 					int patch_pos = y_threshold;
 
@@ -90,7 +89,7 @@ void tm_encode(unsigned int *X, unsigned int *encoded_X, int number_of_examples,
 						int chunk_pos = (patch_pos + number_of_features) % 32;
 						encoded_Xi[chunk_nr] |= (1 << chunk_pos);
 					}
-				} 
+				}
 
 				// Encode patch content into feature vector
 				for (int p_y = 0; p_y < patch_dim_y; ++p_y) {

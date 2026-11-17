@@ -2,19 +2,18 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-LiRA for Tsetlin Machines is an open-source framework for evaluating **training-data exposure** through membership inference attacks. It adapts the Likelihood Ratio Attack (LiRA) to Tsetlin Machine classifiers and provides a repeatable workflow for training shadow models, calculating membership scores, and visualizing attack performance.
+lira4tsetlin is an open-source framework for evaluating **training-data exposure** through membership inference attacks. It adapts the Likelihood Ratio Attack (LiRA) to Tsetlin Machine classifiers and provides a repeatable workflow for training shadow models, calculating membership scores, and visualizing attack performance.
 
-> **Research software:** Results depend on the dataset, model configuration, and experimental setup. Use this project for privacy research and benchmarking—not as a guarantee that a model is private or as a complete privacy audit.
+> **Research software:** Results depend on the dataset, model configuration, and experimental setup. Use this project for privacy research and benchmarking, not as a guarantee that a model is private or as a complete privacy audit.
 
 ## Features
 
-- Likelihood Ratio Attack implementation adapted for Tsetlin Machines
-- Support for MNIST, Fashion-MNIST, and IMDB
-- Online, offline, fixed-variance, and global-threshold LiRA evaluations
-- Reusable Nix development environment with CUDA 12
-- Training, inference, scoring, and evaluation pipeline in a single shell entry point
-- ROC plots and per-sample histogram generation
-- Apache 2.0 licensed code and third-party notices
+- Likelihood Ratio Attack implementation adapted for Tsetlin Machines.
+- Integrated support for MNIST, Fashion-MNIST, and IMDB datasets.
+- Online, offline, fixed-variance, and global-threshold LiRA evaluations.
+- Reusable Nix development environment with CUDA 12.
+- Training, inference, scoring, and evaluation pipeline in a single shell entry point.
+- ROC plots and per-sample histogram generation.
 
 ## Quick start
 
@@ -52,9 +51,9 @@ The included flake provides an `x86_64-linux` development shell for NixOS 26.05 
 
 Prerequisites:
 
-- Nix with flakes enabled
-- NVIDIA GPU drivers and CUDA support
-- The NixOS `allowUnfree` setting enabled for CUDA packages
+- Nix with flakes enabled.
+- NVIDIA GPU drivers and CUDA support.
+- The NixOS `allowUnfree` setting enabled for CUDA packages.
 
 ```bash
 nix develop
@@ -62,17 +61,17 @@ nix develop
 
 The shell hook:
 
-- Creates a Python 3.12 virtual environment
-- Installs project dependencies with Poetry
-- Builds the bundled `pyTsetlinMachineParallel` native module
-- Checks TensorFlow GPU visibility
-- Checks that the Tsetlin Machine module loads
+- Creates a Python 3.12 virtual environment.
+- Installs project dependencies with Poetry.
+- Builds the bundled `pyTsetlinMachineParallel` native module.
+- Checks TensorFlow GPU visibility.
+- Checks that the `pyTsetlinMachineParallel` module loads.
 
 The first launch can take considerable time because native and CUDA-related components may be built for the host machine.
 
 ### Manual installation
 
-For other Linux distributions, install Python 3.12, Poetry, `virtualenv`, and CUDA 12-compatible NVIDIA drivers and libraries.
+For other Linux distributions, install Python 3.12, Poetry, virtualenv, and CUDA 12-compatible NVIDIA drivers and libraries.
 
 ```bash
 virtualenv -p python3.12 tsetlin_env
@@ -87,13 +86,13 @@ cd pyTsetlinMachineParallel
 python3 setup.py build
 python3 setup.py install
 rm -r build pyTsetlinMachineParallel.egg-info
-cd ..
+cd ../
 ```
 
 If the native module cannot find `libTM` at runtime, add the virtual environment's package directory to `LD_LIBRARY_PATH`:
 
 ```bash
-export LD_LIBRARY_PATH="$PWD/tsetlin_env/lib/python3.12/site-packages:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="tsetlin_env/lib/python3.12/site-packages/libTM.cpython-312-x86_64-linux-gnu.so:$LD_LIBRARY_PATH"
 ```
 
 ## Verify the installation
@@ -101,13 +100,13 @@ export LD_LIBRARY_PATH="$PWD/tsetlin_env/lib/python3.12/site-packages:$LD_LIBRAR
 Check whether TensorFlow detects the GPU:
 
 ```bash
-python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))" 2>/dev/null | grep "PhysicalDevice"
 ```
 
 The output should contain a GPU `PhysicalDevice`. Verify the native Tsetlin Machine module:
 
 ```bash
-python3 -c "from pyTsetlinMachineParallel.tm import MultiClassConvolutionalTsetlinMachine2D; tm = MultiClassConvolutionalTsetlinMachine2D(number_of_clauses=2000, T=5000, s=5.0, patch_dim=(10, 10)); print('Reachable:', tm is not None)"
+python3 -c "from pyTsetlinMachineParallel.tm import MultiClassConvolutionalTsetlinMachine2D; TM = MultiClassConvolutionalTsetlinMachine2D(number_of_clauses=2000,T=50 * 100,s=5.0,patch_dim=(10, 10),weighted_clauses=True); print('Reachable:', TM.T == 5000)"
 ```
 
 Expected result:
@@ -124,9 +123,9 @@ Review the settings near the top of [`run.sh`](run.sh) before starting an experi
 | --- | --- | --- |
 | `DATASET` | Keras dataset name | `mnist` |
 | `DATASET_SIZE` | Number of dataset samples | `60000` |
-| `DATASET_CLASSES` | Number of target classes | `10` |
+| `DATASET_CLASSES` | Number of classes | `10` |
 | `DATA_FRACTION` | Dataset divisor; `1` uses the complete dataset | `1` |
-| `NUM_EXPERIMENTS` | Number of shadow models; minimum 16, preferably a power of two | `32` |
+| `NUM_EXPERIMENTS` | Number of shadow models; minimum 16, needs to be a power of two | `32` |
 | `EPOCHS` | Training epochs per shadow model | `30` |
 | `FPR` | Fixed false-positive rate for evaluation | `0.01` |
 
@@ -176,25 +175,31 @@ Do not change `NUM_EXPERIMENTS`, dataset settings, or model parameters while reu
 
 ### Pipeline outputs
 
-- `logs/` — training and evaluation logs
-- `exp/<DATASET>/` — shadow models and experiment artifacts
-- `exp/<DATASET>/data_cache/` — cached preprocessed dataset
-- `exp/<DATASET>/tsetlin_machine.pkl` — saved shadow-model artifacts
-- `exp/<DATASET>/keep.npy` — membership indicators
-- `exp/<DATASET>/logits/` — extracted vote sums
-- `eval@fixedFPR.txt` — text metrics for the configured FPR
-- `exp/<DATASET>/fprtpr.pdf` — ROC plot
+- `logs/` — shadow model training logs.
+- `exp/<DATASET>/` — shadow models and experiment artifacts.
+- `exp/<DATASET>/data_cache/` — cached preprocessed dataset.
+- `exp/<DATASET>/tsetlin_machine.pkl` — saved shadow-model instances.
+- `exp/<DATASET>/keep.npy` — dataset keep.
+- `exp/<DATASET>/logits/` — extracted vote sums.
+- `eval@fixedFPR.txt` — plain text results for the configured FPR.
+- `exp/<DATASET>/fprtpr.pdf` — ROC plot.
 
 Example metrics:
 
 ```text
 Attack Ours (online)
  AUC 0.5363, Accuracy 0.5258, TPR@1%FPR of 0.0098
+Attack Ours (online, fixed variance)
+ AUC 0.5492, Accuracy 0.5283, TPR@1%FPR of 0.0380
 Attack Ours (offline)
  AUC 0.4992, Accuracy 0.5047, TPR@1%FPR of 0.0102
+Attack Ours (offline, fixed variance)
+ AUC 0.4999, Accuracy 0.5071, TPR@1%FPR of 0.0204
 Attack Global threshold
  AUC 0.5205, Accuracy 0.5239, TPR@1%FPR of 0.0119
 ```
+
+<img width="600" height="300" alt="fprtpr" src="https://github.com/user-attachments/assets/60f53f96-563a-4d13-815e-ddb0816badd4" />
 
 These values are illustrative and should not be considered baseline expectations.
 
@@ -219,6 +224,9 @@ Generate histograms after completing score calculation:
 ```
 
 Files are written to `exp/<DATASET>/histograms/`. The default configuration selects 10 samples per class. You can change `--num_samples` in [`run.sh`](run.sh).
+The following histogram is an example and should not be considered the baseline expectation.
+
+<img width="600" height="300" alt="sample_979_scorings" src="https://github.com/user-attachments/assets/10524f6f-f2e4-4864-b690-d84c98bdf1b5" />
 
 This feature is experimental and has only been tested with MNIST and Fashion-MNIST. It assumes image inputs with compatible dimensions and does not support text datasets.
 
@@ -226,13 +234,13 @@ This feature is experimental and has only been tested with MNIST and Fashion-MNI
 
 ```text
 .
-├── core/                       # Training, inference, scoring, and plotting code
-├── pyTsetlinMachineParallel/   # Bundled Tsetlin Machine native implementation
-├── flake.nix                   # Reproducible Nix development environment
-├── pyproject.toml              # Python dependencies and project metadata
-├── run.sh                      # Main four-stage attack pipeline
-├── LICENSE                     # Apache License 2.0
-└── THIRD_PARTY_NOTICES.md      # Third-party notices
+├── core/                       # Training, inference, scoring, and plotting code.
+├── pyTsetlinMachineParallel/   # Bundled Tsetlin Machine native implementation.
+├── flake.nix                   # Reproducible Nix development environment.
+├── pyproject.toml              # Python dependencies and project metadata.
+├── run.sh                      # Main four-stage attack pipeline.
+├── LICENSE                     # Apache License 2.0.
+└── THIRD_PARTY_NOTICES.md      # Third-party notices.
 ```
 
 ## Background
@@ -241,9 +249,9 @@ LiRA was introduced by Carlini et al. as a likelihood-ratio-based membership inf
 
 Related projects:
 
-- [TensorFlow Privacy: LiRA reference implementation](https://github.com/tensorflow/privacy)
-- [CAIR: pyTsetlinMachine](https://github.com/cair/pyTsetlinMachine)
-- [Carlini et al.: Membership Inference Attacks From First Principles](https://github.com/tensorflow/privacy)
+- [TensorFlow Privacy: LiRA reference implementation](https://github.com/tensorflow/privacy/tree/master/research/mi_lira_2021)
+- [CAIR: pyTsetlinMachineParallel](https://github.com/cair/pyTsetlinMachineParallel)
+- [Carlini et al.: Membership Inference Attacks From First Principles](https://ieeexplore.ieee.org/abstract/document/7958568)
 
 ## Contributing
 
@@ -251,11 +259,11 @@ Contributions are welcome, especially improvements to portability, documentation
 
 Good contribution areas include:
 
-- Replacing hard-coded dataset assumptions
-- Adding automated tests
-- Improving CUDA and Nix portability
-- Supporting additional Tsetlin Machine architectures
-- Documenting reproducible experiments
+- Replacing hard-coded dataset assumptions.
+- Adding automated tests.
+- Improving CUDA and Nix portability.
+- Supporting additional Tsetlin Machine architectures.
+- Documenting reproducible experiments.
 
 When opening an issue or pull request, include the operating system, Nix/Python/CUDA versions, relevant configuration, and command output. Please keep research and privacy claims reproducible and clearly distinguish experimental observations from supported guarantees.
 

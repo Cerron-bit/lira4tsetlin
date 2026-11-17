@@ -5,16 +5,16 @@ It helps developers minimize the potential privacy leakage within their models b
 ## Contents
 - [Related Works](#related-works)
 - [Installation](#installation)
- - [Nix Package Manager](#nix-package-manager)
- - [Other Distros & Package Managers](#other-distros--package-managers)
+  - [Nix Package Manager](#nix-package-manager)
+  - [Other Distros & Package Managers](#other-distros--package-managers)
 - [Documentation](#documentation)
- - [General Usage](#general-usage)
-  - [Shadow Model Hyperparameters](#shadow-model-hyperparameters)
-  - [Configuring LiRA](#configuring-lira)
-  - [Running LiRA](#running-lira)
- - [Additional Features](#additional-features)
-  - [Training & Test Accuracy Logs](#training--test-accuracy-logs)
-  - [Generate Histograms](#generate-histograms)
+  - [General Usage](#general-usage)
+    - [Shadow Model Hyperparameters](#shadow-model-hyperparameters)
+    - [Configuring LiRA](#configuring-lira)
+    - [Running LiRA](#running-lira)
+  - [Additional Features](#additional-features)
+    - [Training & Test Accuracy Logs](#training--test-accuracy-logs)
+    - [Generate Histograms](#generate-histograms)
 
 ## Related Works
 The framework will conduct a **Likelihood Ratio Attack (LiRA)**, which is a specific kind of Membership Inference Attack based on the [work of Carlini et al](https://github.com/tensorflow/privacy/tree/master/research/mi_lira_2021).
